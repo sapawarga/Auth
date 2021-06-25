@@ -19,6 +19,18 @@ func NewAuth(conn *sqlx.DB) *Auth {
 	}
 }
 
+func (r *Auth) GetActorCurrentLoginByUsername(ctx context.Context, username string) (*model.Actor, error) {
+	user, err := r.getUserByUsername(ctx, username)
+	if err != nil {
+		return nil, err
+	}
+	return &model.Actor{
+		ID:        user.ID,
+		Username:  user.Username,
+		RoleLabel: model.RoleLabel[user.Role],
+	}, nil
+}
+
 func (r *Auth) GetActorDetailByUsername(ctx context.Context, username string) (*model.UserDetail, error) {
 	var err error
 	user, err := r.getUserByUsername(ctx, username)
