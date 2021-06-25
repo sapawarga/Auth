@@ -9,6 +9,5 @@ require (
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/onsi/ginkgo v1.7.0
 	github.com/onsi/gomega v1.4.3
-	golang.org/x/tools v0.1.4 // indirect
 	google.golang.org/grpc v1.38.0
 )
