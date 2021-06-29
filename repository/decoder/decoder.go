@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/sapawarga/auth/lib/constant"
+	"github.com/sapawarga/auth/config"
 	errLib "github.com/sapawarga/auth/lib/error"
 	"github.com/sapawarga/auth/model"
 )
@@ -16,8 +16,9 @@ func NewToken() *Token {
 }
 
 func (t *Token) ParsingToken(ctx context.Context, token string) (*model.Actor, error) {
+	cfg := config.Get()
 	jwtClaims, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
-		return []byte(constant.JWT_SIGNING_KEY), nil
+		return []byte(cfg.JWT_SIGNING_KEY), nil
 	})
 
 	if err != nil {
@@ -34,6 +35,6 @@ func (t *Token) ParsingToken(ctx context.Context, token string) (*model.Actor, e
 	return &model.Actor{
 		Username:    data["username"].(string),
 		RoleLabel:   data["roleLabel"].(string),
-		LastLoginAt: data["lastLoginAt"],
+		LastLoginAt: data["lastLoginAt"].(map[string]interface{}),
 	}, nil
 }
