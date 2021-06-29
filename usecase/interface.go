@@ -7,5 +7,5 @@ import (
 )
 
 type Service interface {
-	GetActorFromToken(ctx context.Context, token string) (*model.UserDetail, error)
+	GetCurrenrLoginFromToken(ctx context.Context, token string) (*model.Actor, error)
 }

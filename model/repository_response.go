@@ -56,7 +56,7 @@ type User struct {
 	KecamatanID       sql.NullInt64  `db:"kec_id"`
 	KabKotaID         sql.NullInt64  `db:"kabkota_id"`
 	Latitude          sql.NullString `db:"lat"`
-	Longitude         sql.NullString `db:"long"`
+	Longitude         sql.NullString `db:"lon"`
 	PhotoUrl          sql.NullString `db:"photo_url"`
 	Facebook          sql.NullString `db:"facebook"`
 	Twitter           sql.NullString `db:"twitter"`

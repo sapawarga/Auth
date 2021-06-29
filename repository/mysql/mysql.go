@@ -1,4 +1,4 @@
-package repository
+package mysql
 
 import (
 	"bytes"
@@ -17,6 +17,19 @@ func NewAuth(conn *sqlx.DB) *Auth {
 	return &Auth{
 		conn: conn,
 	}
+}
+
+func (r *Auth) GetActorCurrentLoginByUsername(ctx context.Context, username string) (*model.Actor, error) {
+	user, err := r.getUserByUsername(ctx, username)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.Actor{
+		ID:        user.ID,
+		Username:  user.Username,
+		RoleLabel: model.RoleLabel[user.Role],
+	}, nil
 }
 
 func (r *Auth) GetActorDetailByUsername(ctx context.Context, username string) (*model.UserDetail, error) {
@@ -104,8 +117,7 @@ func (r *Auth) getUserByUsername(ctx context.Context, username string) (*model.U
 	query.WriteString(` SELECT id, username, email,	 FROM_UNIXTIME(last_login_at) as last_login_at, role, name, phone, address, job_type_id, education_level_id, 
 		birth_date,	rt, rw, kel_id, kec_id, kabkota_id, lat, lon, photo_url, facebook, twitter, instagram, FROM_UNIXTIME(password_updated_at) as password_updated_at, 
 		FROM_UNIXTIME(profile_updated_at) as profile_updated_at, FROM_UNIXTIME(last_access_at) as last_access_at
-		FROM user
-		WHERE username = ? AND status = ?`)
+		FROM user WHERE username = ? AND status = ?`)
 
 	if ctx != nil {
 		err = r.conn.GetContext(ctx, result, query.String(), username, 10)
@@ -113,7 +125,7 @@ func (r *Auth) getUserByUsername(ctx context.Context, username string) (*model.U
 		err = r.conn.Get(result, query.String(), username, 10)
 	}
 
-	if err != sql.ErrNoRows || err != nil {
+	if err == sql.ErrNoRows || err != nil {
 		return nil, err
 	}
 
