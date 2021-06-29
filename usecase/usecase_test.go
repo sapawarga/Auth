@@ -3,13 +3,16 @@ package usecase_test
 import (
 	"context"
 	"fmt"
+	"os"
 	"reflect"
 
 	"github.com/sapawarga/auth/mocks"
 	"github.com/sapawarga/auth/mocks/testcases"
 	"github.com/sapawarga/auth/usecase"
 
+	kitlog "github.com/go-kit/kit/log"
 	"github.com/golang/mock/gomock"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
@@ -24,11 +27,13 @@ var _ = Describe("Usecase", func() {
 
 	BeforeEach(func() {
 		actor := "test"
+		logger := kitlog.NewLogfmtLogger(os.Stderr)
 		mockSvc := gomock.NewController(GinkgoT())
 		mockSvc.Finish()
 		mockRepo = mocks.NewMockAuthI(mockSvc)
 		mockDecoder = mocks.NewMockJWToken(mockSvc)
-		auth = usecase.NewAuth(mockRepo, mockDecoder, actor)
+		auth = usecase.NewAuth(mockRepo, mockDecoder, actor, logger)
+
 	})
 
 	// DECLARE UNIT TEST FUNCTION

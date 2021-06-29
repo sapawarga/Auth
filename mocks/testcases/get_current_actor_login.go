@@ -35,7 +35,7 @@ var GetCurrentLoginData = []GetCurrentLoginFromToken{
 		Description:     "success_get_actor",
 		UsecaseParam:    "token",
 		TokenRequest:    "token",
-		UsernameRequest: "token",
+		UsernameRequest: "actor",
 		ResponseAfterDecodeToken: ResponseActorLogin{
 			Result: result,
 			Error:  nil,
@@ -69,7 +69,7 @@ var GetCurrentLoginData = []GetCurrentLoginFromToken{
 		Description:     "failed_get_actor_from_db",
 		UsecaseParam:    "token",
 		TokenRequest:    "token",
-		UsernameRequest: "token",
+		UsernameRequest: "actor",
 		ResponseAfterDecodeToken: ResponseActorLogin{
 			Result: result,
 			Error:  nil,
