@@ -53,8 +53,24 @@ var _ = Describe("Usecase", func() {
 		}
 	}
 
+	var GetUserDetailLogic = func(idx int) {
+		ctx := context.Background()
+		data := testcases.GetUserDetailByUsernameData[idx]
+		mockRepo.EXPECT().GetActorDetailByUsername(ctx, data.RepositoryParams).Return(data.MockRepository.Result, data.MockRepository.Error).Times(1)
+		resp, err := auth.GetAccountDetail(ctx, data.UsecaseParams)
+		if err != nil {
+			Expect(err).NotTo(BeNil())
+			Expect(resp).To(BeNil())
+		} else {
+			Expect(err).To(BeNil())
+			Expect(resp.ID).To(Equal(data.MockUsesace.Result.ID))
+			Expect(resp.RegencyID).To(Equal(data.MockUsesace.Result.RegencyID))
+		}
+	}
+
 	var unitTestLogic = map[string]map[string]interface{}{
-		"GetCurrentLoginFromToken": {"func": GetCurrentLoginFromTokenLogic, "test_case_count": len(testcases.GetCurrentLoginData), "desc": testcases.Description()},
+		"GetCurrentLoginFromToken": {"func": GetCurrentLoginFromTokenLogic, "test_case_count": len(testcases.GetCurrentLoginData), "desc": testcases.DescriptionGetCurrentLogin()},
+		"GetAccountDetail":         {"func": GetUserDetailLogic, "test_case_count": len(testcases.GetUserDetailByUsernameData), "desc": testcases.DescriptionGetUserDetail()},
 	}
 
 	for _, val := range unitTestLogic {

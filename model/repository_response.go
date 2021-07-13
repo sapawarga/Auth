@@ -2,47 +2,13 @@ package model
 
 import (
 	"database/sql"
-	"time"
 )
-
-type UserDetail struct {
-	ID                int64     `json:"id"`
-	Username          string    `json:"username"`
-	Email             string    `json:"email,omitempty"`
-	LastLoginAt       time.Time `json:"last_login_at,omitempty"`
-	RoleLabel         string    `json:"role_label"`
-	Name              string    `json:"name"`
-	Phone             string    `json:"phone,omitempty"`
-	Address           string    `json:"address,omitempty"`
-	JobTypeID         int64     `json:"job_type_id,omitempty"`
-	JobType           string    `json:"job_type,omitempty"`
-	EducationLevelID  int64     `json:"education_level_id,omitempty"`
-	EducationLevel    string    `json:"education_level,omitempty"`
-	BirthDate         time.Time `json:"birth_date,omitempty"`
-	RT                string    `json:"rt,omitempty"`
-	RW                string    `json:"rw,omitempty"`
-	KelurahanID       int64     `json:"kel_id,omitempty"`
-	Kelurahan         string    `json:"kelurahan,omitempty"`
-	KecamatanID       int64     `json:"kec_id,omitempty"`
-	Kecamatan         string    `json:"kecamatan,omitempty"`
-	KabKotaID         int64     `json:"kabkota_id,omitempty"`
-	KabKota           string    `json:"kabkota,omitempty"`
-	Latitude          string    `json:"lat,omitempty"`
-	Longitude         string    `json:"long,omitempty"`
-	PhotoUrl          string    `json:"photo_url,omitempty"`
-	Facebook          string    `json:"facebook,omitempty"`
-	Twitter           string    `json:"twitter,omitempty"`
-	Instagram         string    `json:"instagram,omitempty"`
-	PasswordUpdatedAt time.Time `json:"password_updated_at,omitempty"`
-	ProfileUpdatedAt  time.Time `json:"profile_updated_at,omitempty"`
-	LastAccessAt      time.Time `json:"last_access_at,omitempty"`
-}
 
 type User struct {
 	ID                int64          `db:"id"`
 	Username          string         `db:"username"`
 	Email             sql.NullString `db:"email"`
-	LastLoginAt       sql.NullTime   `db:"last_login_at"`
+	LastLoginAt       sql.NullInt64  `db:"last_login_at"`
 	Role              int64          `db:"role"`
 	Name              string         `db:"name"`
 	Phone             sql.NullString `db:"phone"`
@@ -61,9 +27,9 @@ type User struct {
 	Facebook          sql.NullString `db:"facebook"`
 	Twitter           sql.NullString `db:"twitter"`
 	Instagram         sql.NullString `db:"instagram"`
-	PasswordUpdatedAt sql.NullTime   `db:"password_updated_at"`
-	ProfileUpdatedAt  sql.NullTime   `db:"profile_updated_at"`
-	LastAccessAt      sql.NullTime   `db:"last_access_at"`
+	PasswordUpdatedAt sql.NullInt64  `db:"password_updated_at"`
+	ProfileUpdatedAt  sql.NullInt64  `db:"profile_updated_at"`
+	LastAccessAt      sql.NullInt64  `db:"last_access_at"`
 }
 
 type Location struct {
