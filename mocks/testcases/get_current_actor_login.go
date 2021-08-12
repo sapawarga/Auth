@@ -30,6 +30,7 @@ var result = &model.Actor{
 	},
 }
 
+// GetCurrentLoginData ...
 var GetCurrentLoginData = []GetCurrentLoginFromToken{
 	{
 		Description:     "success_get_actor",
@@ -85,7 +86,8 @@ var GetCurrentLoginData = []GetCurrentLoginFromToken{
 	},
 }
 
-func Description() []string {
+// DescriptionGetCurrentLogin ...
+func DescriptionGetCurrentLogin() []string {
 	var arr = []string{}
 	for _, data := range GetCurrentLoginData {
 		arr = append(arr, data.Description)

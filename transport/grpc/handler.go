@@ -9,7 +9,8 @@ import (
 )
 
 type grpcServer struct {
-	decodeToken kitgrpc.Handler
+	decodeToken   kitgrpc.Handler
+	getUserDetail kitgrpc.Handler
 }
 
 func (g *grpcServer) DecodeToken(ctx context.Context, req *tpAuth.RequestDecodeToken) (*tpAuth.ResponsesDecodeToken, error) {
@@ -19,4 +20,13 @@ func (g *grpcServer) DecodeToken(ctx context.Context, req *tpAuth.RequestDecodeT
 	}
 
 	return resp.(*tpAuth.ResponsesDecodeToken), nil
+}
+
+func (g *grpcServer) GetUserDetailByAccessToken(ctx context.Context, req *tpAuth.RequestDecodeToken) (*tpAuth.ResponseUserDetail, error) {
+	_, resp, err := g.getUserDetail.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*tpAuth.ResponseUserDetail), nil
 }

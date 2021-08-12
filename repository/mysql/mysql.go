@@ -6,6 +6,7 @@ import (
 	"database/sql"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/sapawarga/auth/lib/constant"
 	"github.com/sapawarga/auth/model"
 )
 
@@ -19,6 +20,7 @@ func NewAuth(conn *sqlx.DB) *Auth {
 	}
 }
 
+// GetActorCurrentLoginByUsername ...
 func (r *Auth) GetActorCurrentLoginByUsername(ctx context.Context, username string) (*model.Actor, error) {
 	user, err := r.getUserByUsername(ctx, username)
 	if err != nil {
@@ -32,8 +34,8 @@ func (r *Auth) GetActorCurrentLoginByUsername(ctx context.Context, username stri
 	}, nil
 }
 
+// GetActorDetailByUsername ...
 func (r *Auth) GetActorDetailByUsername(ctx context.Context, username string) (*model.UserDetail, error) {
-	var err error
 	user, err := r.getUserByUsername(ctx, username)
 	if err != nil {
 		return nil, err
@@ -44,39 +46,22 @@ func (r *Auth) GetActorDetailByUsername(ctx context.Context, username string) (*
 		return nil, err
 	}
 
-	job := &model.Job{}
-	if user.JobTypeID.Valid {
-		job, err = r.getJobTypeByID(ctx, user.JobTypeID.Int64)
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	return &model.UserDetail{
 		ID: user.ID, Username: user.Username, Name: user.Name,
 		Email: user.Email.String, Phone: user.Phone.String, Address: user.Address.String,
-		LastLoginAt: user.LastLoginAt.Time,
-		RoleLabel:   model.RoleLabel[user.Role],
-		RT:          user.RT.String, RW: user.RW.String,
-		KelurahanID: mapLocations["kelurahan"].ID,
-		Kelurahan:   mapLocations["kelurahan"].Name,
-		KecamatanID: mapLocations["kecamatan"].ID,
-		Kecamatan:   mapLocations["kecamatan"].Name,
-		KabKotaID:   mapLocations["kabkota"].ID,
-		KabKota:     mapLocations["kabkota"].Name,
-		Latitude:    user.Latitude.String,
-		Longitude:   user.Longitude.String,
-		BirthDate:   user.BirthDate.Time,
-		JobTypeID:   job.ID, JobType: job.Title,
-		EducationLevelID:  user.EducationLevelID.Int64,
-		EducationLevel:    model.EducationLevel[user.EducationLevelID.Int64],
-		PhotoUrl:          user.PhotoUrl.String,
-		Facebook:          user.Facebook.String,
-		Twitter:           user.Twitter.String,
-		Instagram:         user.Instagram.String,
-		PasswordUpdatedAt: user.PasswordUpdatedAt.Time,
-		ProfileUpdatedAt:  user.ProfileUpdatedAt.Time,
-		LastAccessAt:      user.LastAccessAt.Time,
+		Role:      user.Role,
+		RoleLabel: model.RoleLabel[user.Role],
+		RT:        user.RT.String, RW: user.RW.String,
+		VillageID:  mapLocations[constant.VILLAGE_KEY].ID,
+		Village:    mapLocations[constant.VILLAGE_KEY].Name,
+		DistrictID: mapLocations[constant.DISTRICT_KEY].ID,
+		District:   mapLocations[constant.DISTRICT_KEY].Name,
+		RegencyID:  mapLocations[constant.REGENCY_KEY].ID,
+		Regency:    mapLocations[constant.REGENCY_KEY].Name,
+		Latitude:   user.Latitude.String,
+		Longitude:  user.Longitude.String,
+		BirthDate:  user.BirthDate.Time,
+		PhotoUrl:   user.PhotoUrl.String,
 	}, nil
 }
 
@@ -87,7 +72,7 @@ func (r *Auth) getDetailLocationOfUser(ctx context.Context, user *model.User) (m
 		if err != nil {
 			return nil, err
 		}
-		mapLocation["kelurahan"] = kelurahan
+		mapLocation[constant.VILLAGE_KEY] = kelurahan
 	}
 
 	if user.KecamatanID.Valid {
@@ -95,7 +80,7 @@ func (r *Auth) getDetailLocationOfUser(ctx context.Context, user *model.User) (m
 		if err != nil {
 			return nil, err
 		}
-		mapLocation["kecamatan"] = kecamatan
+		mapLocation[constant.DISTRICT_KEY] = kecamatan
 	}
 
 	if user.KabKotaID.Valid {
@@ -103,7 +88,7 @@ func (r *Auth) getDetailLocationOfUser(ctx context.Context, user *model.User) (m
 		if err != nil {
 			return nil, err
 		}
-		mapLocation["kabkota"] = kabKota
+		mapLocation[constant.REGENCY_KEY] = kabKota
 	}
 
 	return mapLocation, nil
@@ -114,9 +99,9 @@ func (r *Auth) getUserByUsername(ctx context.Context, username string) (*model.U
 	var err error
 	var result = &model.User{}
 
-	query.WriteString(` SELECT id, username, email,	 FROM_UNIXTIME(last_login_at) as last_login_at, role, name, phone, address, job_type_id, education_level_id, 
-		birth_date,	rt, rw, kel_id, kec_id, kabkota_id, lat, lon, photo_url, facebook, twitter, instagram, FROM_UNIXTIME(password_updated_at) as password_updated_at, 
-		FROM_UNIXTIME(profile_updated_at) as profile_updated_at, FROM_UNIXTIME(last_access_at) as last_access_at
+	query.WriteString(` SELECT id, username, email, last_login_at, role, name, phone, address, job_type_id, education_level_id, 
+		birth_date,	rt, rw, kel_id, kec_id, kabkota_id, lat, lon, photo_url, facebook, twitter, instagram, password_updated_at, 
+		profile_updated_at, last_access_at
 		FROM user WHERE username = ? AND status = ?`)
 
 	if ctx != nil {
@@ -152,22 +137,22 @@ func (r *Auth) getLocationByID(ctx context.Context, id int64) (*model.Location, 
 	return result, nil
 }
 
-func (r *Auth) getJobTypeByID(ctx context.Context, id int64) (*model.Job, error) {
-	var query bytes.Buffer
-	var err error
-	var result = &model.Job{}
+// func (r *Auth) getJobTypeByID(ctx context.Context, id int64) (*model.Job, error) {
+// 	var query bytes.Buffer
+// 	var err error
+// 	var result = &model.Job{}
 
-	query.WriteString(`SELECT id, title FROM job_types WHERE id = ? AND status = 10`)
+// 	query.WriteString(`SELECT id, title FROM job_types WHERE id = ? AND status = 10`)
 
-	if ctx != nil {
-		err = r.conn.GetContext(ctx, result, query.String(), id)
-	} else {
-		err = r.conn.Get(result, query.String(), id)
-	}
+// 	if ctx != nil {
+// 		err = r.conn.GetContext(ctx, result, query.String(), id)
+// 	} else {
+// 		err = r.conn.Get(result, query.String(), id)
+// 	}
 
-	if err != sql.ErrNoRows || err != nil {
-		return nil, err
-	}
+// 	if err != sql.ErrNoRows || err != nil {
+// 		return nil, err
+// 	}
 
-	return result, nil
-}
+// 	return result, nil
+// }

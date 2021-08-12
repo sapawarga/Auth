@@ -26,23 +26,31 @@ func NewAuth(repo repository.AuthI, decoder repository.JWToken, actor string, lo
 	}
 }
 
+// GetCurrenrLoginFromToken ...
 func (a *Auth) GetCurrenrLoginFromToken(ctx context.Context, token string) (*model.Actor, error) {
 	logger := kitlog.With(a.logger, "method", "GetCurrentLoginFromToken")
 	actorToken, err := a.decoder.ParsingToken(ctx, token)
 	if err != nil {
-		level.Error(logger).Log("error parsing token", err)
+		level.Error(logger).Log("error_parsing_token", err)
 		return nil, err
 	}
 
 	actor, err := a.db.GetActorCurrentLoginByUsername(ctx, actorToken.Username)
 	if err != nil {
-		level.Error(logger).Log("error get actor", err)
+		level.Error(logger).Log("error_get_actor", err)
 		return nil, err
 	}
 	actorToken.ID = actor.ID
 	return actorToken, nil
 }
 
-// func (a *Auth) getActorByUsername(ctx context.Context, username string) (*model.UserDetail, error) {
-// 	return a.repository.GetActorDetailByUsername(ctx, username)
-// }
+// GetAccountDetail ...
+func (a *Auth) GetAccountDetail(ctx context.Context, username string) (*model.UserDetail, error) {
+	logger := kitlog.With(a.logger, "method", "GetAcountDetail")
+	user, err := a.db.GetActorDetailByUsername(ctx, username)
+	if err != nil {
+		level.Error(logger).Log("error_get_actor", err)
+		return nil, err
+	}
+	return user, nil
+}

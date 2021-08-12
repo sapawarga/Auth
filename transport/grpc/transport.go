@@ -18,8 +18,15 @@ func MakeHandler(fs usecase.Service) tpAuth.AuthHandlerServer {
 		encodeTokenResponse,
 	)
 
+	getUserDetailHandler := kitgrpc.NewServer(
+		endpoint.GetUserDetailByAccessToken(fs),
+		decodeTokenRequest,
+		encodeUserDetail,
+	)
+
 	return &grpcServer{
 		decodeTokenHandler,
+		getUserDetailHandler,
 	}
 }
 
@@ -34,6 +41,31 @@ func encodeTokenResponse(ctx context.Context, r interface{}) (interface{}, error
 		Id:        resp.ID,
 		Username:  resp.Username,
 		RoleLabel: resp.RoleLabel,
+	}
+
+	return data, nil
+}
+
+func encodeUserDetail(ctx context.Context, r interface{}) (interface{}, error) {
+	resp := r.(*model.UserDetail)
+
+	data := &tpAuth.ResponseUserDetail{
+		Id:         resp.ID,
+		Username:   resp.Username,
+		Email:      resp.Email,
+		RoleLabel:  resp.RoleLabel,
+		Name:       resp.Name,
+		Phone:      resp.Phone,
+		PhotoUrl:   resp.PhotoUrl,
+		RegencyId:  resp.RegencyID,
+		Regency:    resp.Regency,
+		BirthDate:  resp.BirthDate.String(),
+		DistrictId: resp.DistrictID,
+		District:   resp.District,
+		VillageId:  resp.VillageID,
+		Village:    resp.Village,
+		Latitude:   resp.Latitude,
+		Longitude:  resp.Longitude,
 	}
 
 	return data, nil
