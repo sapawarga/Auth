@@ -20,6 +20,7 @@ func NewAuth(conn *sqlx.DB) *Auth {
 	}
 }
 
+// GetActorCurrentLoginByUsername ...
 func (r *Auth) GetActorCurrentLoginByUsername(ctx context.Context, username string) (*model.Actor, error) {
 	user, err := r.getUserByUsername(ctx, username)
 	if err != nil {
@@ -33,8 +34,8 @@ func (r *Auth) GetActorCurrentLoginByUsername(ctx context.Context, username stri
 	}, nil
 }
 
+// GetActorDetailByUsername ...
 func (r *Auth) GetActorDetailByUsername(ctx context.Context, username string) (*model.UserDetail, error) {
-	var err error
 	user, err := r.getUserByUsername(ctx, username)
 	if err != nil {
 		return nil, err
@@ -45,20 +46,12 @@ func (r *Auth) GetActorDetailByUsername(ctx context.Context, username string) (*
 		return nil, err
 	}
 
-	job := &model.Job{}
-	if user.JobTypeID.Valid {
-		job, err = r.getJobTypeByID(ctx, user.JobTypeID.Int64)
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	return &model.UserDetail{
 		ID: user.ID, Username: user.Username, Name: user.Name,
 		Email: user.Email.String, Phone: user.Phone.String, Address: user.Address.String,
-		LastLoginAt: user.LastLoginAt.Int64,
-		RoleLabel:   model.RoleLabel[user.Role],
-		RT:          user.RT.String, RW: user.RW.String,
+		Role:      user.Role,
+		RoleLabel: model.RoleLabel[user.Role],
+		RT:        user.RT.String, RW: user.RW.String,
 		VillageID:  mapLocations[constant.VILLAGE_KEY].ID,
 		Village:    mapLocations[constant.VILLAGE_KEY].Name,
 		DistrictID: mapLocations[constant.DISTRICT_KEY].ID,
@@ -68,16 +61,7 @@ func (r *Auth) GetActorDetailByUsername(ctx context.Context, username string) (*
 		Latitude:   user.Latitude.String,
 		Longitude:  user.Longitude.String,
 		BirthDate:  user.BirthDate.Time,
-		JobTypeID:  job.ID, JobType: job.Title,
-		EducationLevelID:  user.EducationLevelID.Int64,
-		EducationLevel:    model.EducationLevel[user.EducationLevelID.Int64],
-		PhotoUrl:          user.PhotoUrl.String,
-		Facebook:          user.Facebook.String,
-		Twitter:           user.Twitter.String,
-		Instagram:         user.Instagram.String,
-		PasswordUpdatedAt: user.PasswordUpdatedAt.Int64,
-		ProfileUpdatedAt:  user.ProfileUpdatedAt.Int64,
-		LastAccessAt:      user.LastAccessAt.Int64,
+		PhotoUrl:   user.PhotoUrl.String,
 	}, nil
 }
 
@@ -153,22 +137,22 @@ func (r *Auth) getLocationByID(ctx context.Context, id int64) (*model.Location, 
 	return result, nil
 }
 
-func (r *Auth) getJobTypeByID(ctx context.Context, id int64) (*model.Job, error) {
-	var query bytes.Buffer
-	var err error
-	var result = &model.Job{}
+// func (r *Auth) getJobTypeByID(ctx context.Context, id int64) (*model.Job, error) {
+// 	var query bytes.Buffer
+// 	var err error
+// 	var result = &model.Job{}
 
-	query.WriteString(`SELECT id, title FROM job_types WHERE id = ? AND status = 10`)
+// 	query.WriteString(`SELECT id, title FROM job_types WHERE id = ? AND status = 10`)
 
-	if ctx != nil {
-		err = r.conn.GetContext(ctx, result, query.String(), id)
-	} else {
-		err = r.conn.Get(result, query.String(), id)
-	}
+// 	if ctx != nil {
+// 		err = r.conn.GetContext(ctx, result, query.String(), id)
+// 	} else {
+// 		err = r.conn.Get(result, query.String(), id)
+// 	}
 
-	if err != sql.ErrNoRows || err != nil {
-		return nil, err
-	}
+// 	if err != sql.ErrNoRows || err != nil {
+// 		return nil, err
+// 	}
 
-	return result, nil
-}
+// 	return result, nil
+// }

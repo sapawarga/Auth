@@ -16,6 +16,7 @@ type UserDetail struct {
 	Username          string    `json:"username"`
 	Email             string    `json:"email,omitempty"`
 	LastLoginAt       int64     `json:"last_login_at,omitempty"`
+	Role              int64     `json:"role"`
 	RoleLabel         string    `json:"role_label"`
 	Name              string    `json:"name"`
 	Phone             string    `json:"phone,omitempty"`
